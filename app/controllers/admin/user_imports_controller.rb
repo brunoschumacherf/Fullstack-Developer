@@ -1,17 +1,26 @@
 module Admin
-  class UserImportsController < ApplicationController
-    before_action :require_admin
+  class UserImportsController < BaseController
+    def show
+      import = UserImport.find(params.expect(:id))
+      render json: import.to_props
+    end
 
     def create
       user_import = current_user.user_imports.build
-      user_import.file.attach(params[:file])
+      user_import.file.attach(file_param)
 
       if user_import.save
         ProcessUserImportJob.perform_later(user_import.id)
-        redirect_to admin_dashboard_path, notice: "Importação iniciada com sucesso!"
+        redirect_to admin_dashboard_path, notice: I18n.t("flashes.imports.started")
       else
-        redirect_to admin_dashboard_path, alert: "Erro ao anexar arquivo de planilha."
+        redirect_to admin_dashboard_path, alert: user_import.errors.full_messages.to_sentence
       end
+    end
+
+    private
+
+    def file_param
+      params.expect(:file)
     end
   end
 end
