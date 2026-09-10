@@ -1,0 +1,9 @@
+.git
+.gitignore
+log/*
+tmp/*
+node_modules
+storage/*
+public/assets
+public/vite-dev
+public/vite
