@@ -1,0 +1,139 @@
+pt-BR:
+  flashes:
+    auth:
+      admin_required: "Acesso de administrador necessário."
+    sessions:
+      created: "Login realizado com sucesso."
+      destroyed: "Você saiu da conta."
+      invalid: "E-mail ou senha inválidos."
+      throttled: "Muitas tentativas. Tente novamente em instantes."
+    registrations:
+      created: "Conta criada com sucesso."
+    profiles:
+      updated: "Perfil atualizado com sucesso."
+      deleted: "Sua conta foi excluída."
+    users:
+      created: "Usuário criado."
+      updated: "Usuário atualizado."
+      deleted: "Usuário excluído."
+    imports:
+      started: "Importação iniciada."
+
+  imports:
+    row_error: "Linha %{line}: %{messages}"
+
+  activerecord:
+    models:
+      user: Usuário
+      user_import: Importação
+    attributes:
+      user:
+        full_name: Nome completo
+        email_address: E-mail
+        password: Senha
+        password_confirmation: Confirmação de senha
+        role: Perfil
+        avatar: Avatar
+        avatar_url: URL do avatar
+      user_import:
+        file: Planilha
+    errors:
+      models:
+        user:
+          attributes:
+            avatar:
+              invalid_type: deve ser uma imagem PNG, JPEG, GIF ou WEBP
+              too_large: deve ter menos de 5 MB
+            avatar_url:
+              invalid: deve ser uma URL http(s) válida
+            role:
+              last_admin: não é possível rebaixar o último administrador
+            base:
+              last_admin: não é possível excluir o último administrador
+        user_import:
+          attributes:
+            file:
+              invalid_type: deve ser uma planilha CSV ou XLSX
+              too_large: deve ter menos de 10 MB
+
+  errors:
+    messages:
+      blank: não pode ficar em branco
+      taken: já está em uso
+      invalid: não é válido
+      confirmation: não confere com %{attribute}
+      too_short:
+        one: "é muito curto (mínimo: %{count} caractere)"
+        other: "é muito curto (mínimo: %{count} caracteres)"
+  frontend:
+    brand: Umanni Usuários
+    nav:
+      dashboard: Painel
+      new_user: Novo usuário
+      profile: Perfil
+      sign_out: Sair
+    roles:
+      admin: Administrador
+      member: Membro
+    login:
+      title: Entrar
+      subtitle: Administradores vão para o painel. Membros vão para o próprio perfil.
+      email: E-mail
+      password: Senha
+      submit: Entrar
+      submitting: Entrando...
+      new_here: Novo por aqui?
+      create_account: Criar uma conta
+    register:
+      title: Crie sua conta
+      subtitle: Visitantes se cadastram como membros. Administradores são definidos depois.
+      already: Já tem conta?
+      sign_in: Entrar
+    profile:
+      edit_title: Editar seu perfil
+      delete: Excluir minha conta
+      delete_confirm: Excluir sua conta permanentemente?
+    dashboard:
+      title: Painel administrativo
+      subtitle: Totais ao vivo, perfis e importação de planilhas.
+      create_user: Criar usuário
+      total_users: Total de usuários
+      admins: Administradores
+      members: Membros
+      import_title: Importar planilha
+      import_help: "CSV ou XLSX com colunas: full_name, email, role, avatar_url (ou nome, e-mail, perfil)."
+      start_import: Iniciar importação
+      uploading: Enviando...
+      status: "Status: %{status}"
+      progress: "%{processed}/%{total} processados · %{successful} criados · %{failed} falharam"
+      users: Usuários
+      user: Usuário
+      email: E-mail
+      role: Perfil
+      actions: Ações
+      edit: Editar
+      toggle_role: Alternar perfil
+      delete: Excluir
+      delete_confirm: "Excluir %{name}?"
+    import_status:
+      pending: pendente
+      processing: processando
+      completed: concluída
+      failed: falhou
+    users:
+      new_title: Criar usuário
+      edit_title: "Editar %{name}"
+    forms:
+      full_name: Nome completo
+      email: E-mail
+      password: Senha
+      password_optional: Senha (opcional)
+      password_confirmation: Confirmar senha
+      role: Perfil
+      avatar_url: URL do avatar
+      avatar_upload: Ou envie uma imagem
+      saving: Salvando...
+      create_account: Criar conta
+      create_user: Criar usuário
+      save_changes: Salvar alterações
+      save_user: Salvar usuário

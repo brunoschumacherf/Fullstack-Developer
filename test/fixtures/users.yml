@@ -1,0 +1,19 @@
+admin:
+  full_name: Ada Admin
+  email_address: admin@example.com
+  password_digest: <%= BCrypt::Password.create("password123", cost: 4) %>
+  role: admin
+  avatar_url: https://example.com/ada.png
+
+member:
+  full_name: Morgan Member
+  email_address: user@example.com
+  password_digest: <%= BCrypt::Password.create("password123", cost: 4) %>
+  role: member
+  avatar_url: https://example.com/morgan.png
+
+second_admin:
+  full_name: Second Admin
+  email_address: second-admin@example.com
+  password_digest: <%= BCrypt::Password.create("password123", cost: 4) %>
+  role: admin

@@ -1,22 +1,10 @@
 module Admin
-  class DashboardController < ApplicationController
-    before_action :require_admin
-
+  class DashboardController < BaseController
     def index
       render inertia: "Admin/Dashboard", props: {
-        stats: {
-          total_users: User.count,
-          role_counts: User.group(:role).count
-        },
-        users: User.all.map { |u|
-          {
-            id: u.id,
-            full_name: u.full_name,
-            email_address: u.email_address,
-            role: u.role,
-            avatar_url: u.avatar_url
-          }
-        }
+        stats: Dashboard::Stats.call,
+        users: User.order(:full_name).map(&:to_props),
+        active_import: current_user.user_imports.where(status: %w[pending processing]).order(created_at: :desc).first&.to_props
       }
     end
   end

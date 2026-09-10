@@ -1,8 +1,8 @@
-import inertia from '@inertiajs/vite'
-import { defineConfig } from 'vite'
-import RubyPlugin from 'vite-plugin-ruby'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import inertia from "@inertiajs/vite"
+import { defineConfig } from "vite"
+import RubyPlugin from "vite-plugin-ruby"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
   plugins: [
@@ -11,11 +11,14 @@ export default defineConfig({
     tailwindcss(),
     inertia(),
   ],
+
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
+    port: 3036,
+
     hmr: {
-      host: 'localhost',
-      port: 5173,
+      host: "localhost",
+      port: 3036,
     },
   },
 })

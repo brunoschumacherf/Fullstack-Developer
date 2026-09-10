@@ -1,20 +1,76 @@
-default: &default
+# PostgreSQL stores application data.
+# SQLite WAL powers Solid Cache, Solid Queue, and Solid Cable (no Redis).
+
+default: &postgres
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DB_HOST", "db") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
   username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
   password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
-  port: 5432
+  port: <%= ENV.fetch("DB_PORT", 5432) %>
+
+sqlite: &sqlite
+  adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  pragmas:
+    journal_mode: WAL
+    synchronous: NORMAL
+    mmap_size: 134217728
+    journal_size_limit: 67108864
+    cache_size: 2000
 
 development:
-  <<: *default
-  database: user_management_development
+  primary:
+    <<: *postgres
+    database: user_management_development
+    url: <%= ENV["DATABASE_URL"] %>
+  cache:
+    <<: *sqlite
+    database: storage/development_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *sqlite
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *sqlite
+    database: storage/development_cable.sqlite3
+    migrations_paths: db/cable_migrate
 
 test:
-  <<: *default
-  database: user_management_test
+  primary:
+    <<: *postgres
+    database: user_management_test<%= ENV["TEST_ENV_NUMBER"] %>
+    url: <%= ENV["DATABASE_URL"] %>
+  cache:
+    <<: *sqlite
+    database: storage/test_cache<%= ENV["TEST_ENV_NUMBER"] %>.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *sqlite
+    database: storage/test_queue<%= ENV["TEST_ENV_NUMBER"] %>.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *sqlite
+    database: storage/test_cable<%= ENV["TEST_ENV_NUMBER"] %>.sqlite3
+    migrations_paths: db/cable_migrate
 
 production:
-  <<: *default
-  database: user_management_production
+  primary:
+    <<: *postgres
+    database: user_management_production
+    url: <%= ENV["DATABASE_URL"] %>
+  cache:
+    <<: *sqlite
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *sqlite
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *sqlite
+    database: storage/production_cable.sqlite3
+    migrations_paths: db/cable_migrate

@@ -1,0 +1,3 @@
+full_name,email,role,avatar_url
+Imported One,imported.one@example.com,member,https://example.com/one.png
+Imported Admin,imported.admin@example.com,admin,https://example.com/admin.png

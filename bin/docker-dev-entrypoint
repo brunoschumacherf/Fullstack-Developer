@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+
+bundle check || bundle install
+if [ ! -d node_modules/@inertiajs ]; then
+  npm install
+fi
+
+rm -f tmp/pids/server.pid
+bin/rails db:prepare
+
+exec "$@"

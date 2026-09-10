@@ -3,12 +3,12 @@ module Authentication
 
   included do
     before_action :require_authentication
-    helper_method :authenticated?
+    helper_method :authenticated?, :current_user
   end
 
   class_methods do
-    def allow_unauthenticated_access(*args, **options)
-      skip_before_action :require_authentication, *args, **options
+    def allow_unauthenticated_access(...)
+      skip_before_action(:require_authentication, ...)
     end
   end
 
@@ -16,6 +16,10 @@ module Authentication
 
   def authenticated?
     resume_session
+  end
+
+  def current_user
+    Current.user
   end
 
   def require_authentication
@@ -35,18 +39,33 @@ module Authentication
     redirect_to login_path
   end
 
+  def after_authentication_url
+    session.delete(:return_to_after_authenticating).presence || default_url_after_login
+  end
+
+  def default_url_after_login
+    current_user&.admin? ? admin_dashboard_path : profile_path
+  end
+
   def start_new_session_for(user)
-    user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
-      cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
+    user.sessions.create!(
+      user_agent: request.user_agent,
+      ip_address: request.remote_ip
+    ).tap do |new_session|
+      Current.session = new_session
+
+      cookies.signed.permanent[:session_id] = {
+        value: new_session.id,
+        httponly: true,
+        same_site: :lax,
+        secure: Rails.env.production?
+      }
     end
   end
 
   def terminate_session
     Current.session&.destroy
     cookies.delete(:session_id)
-  end
-
-  def current_user
-    Current.session&.user
+    Current.session = nil
   end
 end
