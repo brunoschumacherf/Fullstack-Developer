@@ -67,3 +67,4 @@ gem "roo", "~> 3.0"
 gem "vite_rails", "~> 3.11"
 
 gem "bcrypt", "~> 3.1"
+gem "json", "~> 2.21"
