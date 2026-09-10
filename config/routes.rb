@@ -1,14 +1,24 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
+  constraints(host: "127.0.0.1") do
+    get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
+  end
+  get 'inertia-example', to: 'inertia_example#index'
+  root to: redirect("/login")
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "login", to: "sessions#new", as: :login
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy", as: :logout
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  get "register", to: "registrations#new", as: :register
+  post "register", to: "registrations#create"
+
+  resource :profile, only: %i[show update destroy]
+
+  namespace :admin do
+    get "dashboard", to: "dashboard#index"
+    resources :users
+    resources :user_imports, only: %i[create]
+  end
 end
