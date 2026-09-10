@@ -1,31 +1,116 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  flashes:
+    auth:
+      admin_required: "Admin access required."
+    sessions:
+      created: "Signed in successfully."
+      destroyed: "Signed out successfully."
+      invalid: "Invalid email or password."
+      throttled: "Too many attempts. Please try again later."
+    registrations:
+      created: "Account created successfully."
+    profiles:
+      updated: "Profile updated successfully."
+      deleted: "Your account has been deleted."
+    users:
+      created: "User created."
+      updated: "User updated."
+      deleted: "User deleted."
+    imports:
+      started: "Import started."
+
+  imports:
+    row_error: "Line %{line}: %{messages}"
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            avatar:
+              invalid_type: must be a PNG, JPEG, GIF, or WEBP image
+              too_large: must be smaller than 5MB
+            avatar_url:
+              invalid: must be a valid http(s) URL
+            role:
+              last_admin: cannot demote the last admin
+            base:
+              last_admin: cannot delete the last admin
+        user_import:
+          attributes:
+            file:
+              invalid_type: must be a CSV or XLSX spreadsheet
+              too_large: must be smaller than 10MB
+
+  frontend:
+    brand: Umanni Users
+    nav:
+      dashboard: Dashboard
+      new_user: New user
+      profile: Profile
+      sign_out: Sign out
+    roles:
+      admin: Admin
+      member: Member
+    login:
+      title: Sign in
+      subtitle: Admins land on the dashboard. Members land on their profile.
+      email: Email
+      password: Password
+      submit: Sign in
+      submitting: Signing in...
+      new_here: New here?
+      create_account: Create an account
+    register:
+      title: Create your account
+      subtitle: Visitors register as members. Admins are assigned later.
+      already: Already registered?
+      sign_in: Sign in
+    profile:
+      edit_title: Edit your profile
+      delete: Delete my account
+      delete_confirm: Delete your account permanently?
+    dashboard:
+      title: Admin dashboard
+      subtitle: Live user totals, roles, and spreadsheet imports.
+      create_user: Create user
+      total_users: Total users
+      admins: Admins
+      members: Members
+      import_title: Import spreadsheet
+      import_help: "CSV or XLSX with columns: full_name, email, role, avatar_url."
+      start_import: Start import
+      uploading: Uploading...
+      status: "Status: %{status}"
+      progress: "%{processed}/%{total} processed · %{successful} created · %{failed} failed"
+      users: Users
+      user: User
+      email: Email
+      role: Role
+      actions: Actions
+      edit: Edit
+      toggle_role: Toggle role
+      delete: Delete
+      delete_confirm: "Delete %{name}?"
+    import_status:
+      pending: pending
+      processing: processing
+      completed: completed
+      failed: failed
+    users:
+      new_title: Create user
+      edit_title: "Edit %{name}"
+    forms:
+      full_name: Full name
+      email: Email
+      password: Password
+      password_optional: Password (optional)
+      password_confirmation: Confirm password
+      role: Role
+      avatar_url: Avatar URL
+      avatar_upload: Or upload an image
+      saving: Saving...
+      create_account: Create account
+      create_user: Create user
+      save_changes: Save changes
+      save_user: Save user
