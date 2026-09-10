@@ -29,9 +29,14 @@
 !/tmp/storage/.keep
 
 /public/assets
+/coverage
+/public/vite-test
+/public/vite-ssr
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
+/config/master.key
+/.kamal/secrets
 
 
 # Vite Ruby
