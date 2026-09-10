@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
 
-  # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
   end
-  get 'inertia-example', to: 'inertia_example#index'
+
   root to: redirect("/login")
 
   get "login", to: "sessions#new", as: :login
@@ -19,6 +19,6 @@ Rails.application.routes.draw do
   namespace :admin do
     get "dashboard", to: "dashboard#index"
     resources :users
-    resources :user_imports, only: %i[create]
+    resources :user_imports, only: %i[create show]
   end
 end
