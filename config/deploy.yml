@@ -1,0 +1,54 @@
+# Kamal 2 production deploy. Replace hosts, image, and proxy host before shipping.
+service: umanni-users
+image: umanni/users
+
+servers:
+  web:
+    - 192.168.0.1
+
+proxy:
+  ssl: true
+  host: users.example.com
+
+registry:
+  username: umanni
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - DATABASE_URL
+  clear:
+    SOLID_QUEUE_IN_PUMA: true
+    RUBY_YJIT_ENABLE: 0
+    RUBY_ZJIT_ENABLE: 1
+    PORT: 80
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+volumes:
+  - "umanni_users_storage:/rails/storage"
+
+asset_path: /rails/public
+
+builder:
+  arch: amd64
+
+accessories:
+  db:
+    image: postgres:16
+    host: 192.168.0.1
+    port: 5432
+    env:
+      clear:
+        POSTGRES_USER: umanni
+        POSTGRES_DB: user_management_production
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
