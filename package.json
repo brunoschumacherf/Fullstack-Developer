@@ -35,7 +35,9 @@
     "react-dom": "^19.3.0"
   },
   "scripts": {
+    "build": "vite build && vite build --ssr",
     "check": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
+    "start:ssr": "node public/vite-ssr/ssr.js",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage"
   }

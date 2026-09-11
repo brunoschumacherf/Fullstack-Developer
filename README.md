@@ -2,6 +2,10 @@
 
 A fullstack user management application built with **Ruby on Rails 8**, **React 19**, and **Inertia.js**. Administrators can create, edit, and bulk-import users via CSV or Excel files, with real-time import progress delivered through ActionCable WebSockets.
 
+## AI Usage Disclosure
+
+This submission was developed with assistance from **Google Gemini** through Antigravity IDE and **OpenAI Codex using GPT-6 and GPT-5**. AI was used for code generation, refactoring, tests, architecture review, documentation, and production configuration. Every proposed change was reviewed, adapted, and validated by the developer before inclusion.
+
 ---
 
 ## Tech Stack
@@ -255,9 +259,12 @@ Supported columns: `full_name`, `email`, `role` (`admin` or `member`), `avatar_u
 
 ## Deployment
 
-The project uses **Kamal 2** for zero-downtime Docker-based deployments. See `.kamal/` for server and secrets configuration.
+The project uses **Kamal 2** for zero-downtime Docker-based deployments. Copy `.kamal/secrets.example` to `.kamal/secrets`, export the infrastructure values documented in `.env.example`, and keep the secrets file out of Git.
 
 ```bash
+# Validate the rendered configuration
+DEPLOY_HOST=203.0.113.10 APP_HOST=users.example.com kamal config
+
 # First deploy
 kamal setup
 
@@ -265,15 +272,43 @@ kamal setup
 kamal deploy
 ```
 
+The production container runs Puma behind **Thruster**, which provides asset caching and gzip compression. Kamal Proxy terminates TLS and probes `/up`; forwarding headers keeps Rails aware of the original HTTPS request. PostgreSQL is deployed as a private accessory without publishing its port.
+
+### Inertia SSR
+
+Production SSR is enabled by default. Vite builds the browser and server bundles during `assets:precompile`, and Puma's `inertia_ssr` plugin supervises the Node 22 renderer on `127.0.0.1:13714`. The browser entrypoint hydrates server-rendered HTML and falls back to a normal client render when no SSR markup is present.
+
+```bash
+# Build both bundles outside the Docker build
+npm run build
+
+# Disable SSR temporarily while preserving client-side rendering
+INERTIA_SSR=false bin/rails server
+```
+
+### Ruby 4 ZJIT profiling
+
+Release containers enable ZJIT through `RUBY_ZJIT_ENABLE=1`. A focused workload profiler records compilation, side-exit, and time-in-JIT statistics for dashboard aggregation and serialization:
+
+```bash
+docker compose run --rm \
+  -e RUBYOPT=--zjit-stats=/dev/null \
+  -e ZJIT_PROFILE_ITERATIONS=500 \
+  app bin/rails runner script/zjit_profile.rb
+```
+
+Compare the compiled ISEQ count, side exits, executable memory, and elapsed time after changing hot paths. Builds compiled with extended ZJIT instrumentation also report `ratio_in_zjit`. ZJIT consumes additional memory, so production capacity should be measured with the same container limits used by Kamal.
+Set `ZJIT_PROFILE_FULL=true` to emit every counter exposed by `RubyVM::ZJIT.stats`.
+
 ---
 
-## AI Usage Declaration
+## AI-assisted Development Notes
 
-This project was developed with the assistance of **[Google Gemini](https://gemini.google.com/)**, integrated directly into the editor via **[Antigravity IDE](https://antigravity.dev/)**.
+The disclosure at the top lists every assistant and model used. The examples below describe how AI-assisted development was applied in practice.
 
 ### Code autocomplete
 
-Gemini acted as a real-time pair programmer throughout development. Suggestions were accepted, adapted, or discarded with critical judgment — AI accelerated the writing of boilerplate and repetitive patterns, while architecture decisions, method names, and folder structure were always reviewed and adjusted manually to ensure consistency with the rest of the project.
+AI assistants acted as pair programmers throughout development. Suggestions were accepted, adapted, or discarded with critical judgment — AI accelerated the writing of boilerplate and repetitive patterns, while architecture decisions, method names, and folder structure were reviewed and adjusted manually to ensure consistency with the rest of the project.
 
 Concrete examples where autocomplete saved meaningful time:
 
@@ -286,13 +321,13 @@ Concrete examples where autocomplete saved meaningful time:
 All specs in this project were written **with direct AI assistance**. The workflow was:
 
 1. Write the production code
-2. Ask Gemini to generate the corresponding test cases
+2. Ask the active AI assistant to generate the corresponding test cases
 3. Review every spec — adjust fixtures, fix edge cases, and ensure tests actually validate behavior rather than just confirming the code runs
 
 This process uncovered real bugs: the ordering of `create!` vs `file.attach` in the `UserImportSerializer` spec, for instance, was caught precisely because the AI-generated test attempted to persist the record before attaching the file — forcing the correction to `new` + `attach` + `save!`.
 
 ### Conversation-driven refactoring
 
-Several refactorings in this project — including the extraction of parsing logic into `ParserFactory` and the migration of `to_props` from models into dedicated serializers — were proposed, discussed, and implemented through direct conversation with Gemini. The process resembles an interactive code review: the AI proposes a plan, the developer questions, approves, or rejects parts of it, and execution happens incrementally with full visibility at each step.
+Several refactorings in this project — including the extraction of parsing logic into `ParserFactory` and the migration of `to_props` from models into dedicated serializers — were proposed, discussed, and implemented through direct conversation with AI assistants. The process resembles an interactive code review: the AI proposes a plan, the developer questions, approves, or rejects parts of it, and execution happens incrementally with full visibility at each step.
 
 > AI did not replace technical judgment — it amplified execution speed while the developer retained full control over design decisions.

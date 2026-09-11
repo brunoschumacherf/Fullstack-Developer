@@ -1,5 +1,10 @@
 import { createConsumer } from "@rails/actioncable"
 
-const consumer = createConsumer()
+type Consumer = ReturnType<typeof createConsumer>
 
-export default consumer
+let consumer: Consumer | undefined
+
+export default function getConsumer() {
+  consumer ??= createConsumer()
+  return consumer
+}

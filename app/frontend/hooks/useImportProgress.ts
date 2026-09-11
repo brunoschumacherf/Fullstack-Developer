@@ -1,6 +1,6 @@
 import { router } from "@inertiajs/react"
 import { useEffect, useState } from "react"
-import consumer from "../channels/consumer"
+import getConsumer from "../channels/consumer"
 import type { ImportProps } from "../types"
 
 export default function useImportProgress(activeImport: ImportProps | null) {
@@ -8,7 +8,7 @@ export default function useImportProgress(activeImport: ImportProps | null) {
   useEffect(() => setProgress(activeImport), [activeImport])
   useEffect(() => {
     if (!progress || progress.status === "completed" || progress.status === "failed") return
-    const subscription = consumer.subscriptions.create(
+    const subscription = getConsumer().subscriptions.create(
       { channel: "ImportProgressChannel", id: progress.id },
       {
         received(payload: ImportProps) {

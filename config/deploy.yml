@@ -1,19 +1,32 @@
-# Kamal 2 production deploy. Replace hosts, image, and proxy host before shipping.
-service: umanni-users
-image: umanni/users
+# Kamal 2 single-host deployment. Infrastructure-specific values are supplied
+# by the deploy environment instead of being committed to the repository.
+service: <%= ENV.fetch("KAMAL_SERVICE", "umanni-users") %>
+image: <%= ENV.fetch("KAMAL_IMAGE", "brunoschumacherf/fullstack-developer") %>
 
 servers:
   web:
-    - 192.168.0.1
+    - <%= ENV.fetch("DEPLOY_HOST") %>
 
 proxy:
   ssl: true
-  host: users.example.com
+  host: <%= ENV.fetch("APP_HOST") %>
+  forward_headers: true
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 3
+
+deploy_timeout: 60
+drain_timeout: 30
 
 registry:
-  username: umanni
+  server: ghcr.io
+  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME", "brunoschumacherf") %>
   password:
     - KAMAL_REGISTRY_PASSWORD
+
+ssh:
+  user: <%= ENV.fetch("DEPLOY_USER", "root") %>
 
 env:
   secret:
@@ -21,9 +34,12 @@ env:
     - DATABASE_URL
   clear:
     SOLID_QUEUE_IN_PUMA: true
-    RUBY_YJIT_ENABLE: 0
+    INERTIA_SSR: true
     RUBY_ZJIT_ENABLE: 1
-    PORT: 80
+    CACHE_SIZE: 67108864
+    MAX_CACHE_ITEM_SIZE: 1048576
+    GZIP_COMPRESSION_ENABLED: true
+    GZIP_COMPRESSION_DISABLE_ON_AUTH: true
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
@@ -42,8 +58,7 @@ builder:
 accessories:
   db:
     image: postgres:16
-    host: 192.168.0.1
-    port: 5432
+    host: <%= ENV.fetch("DEPLOY_HOST") %>
     env:
       clear:
         POSTGRES_USER: umanni
