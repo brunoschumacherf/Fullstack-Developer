@@ -219,6 +219,8 @@ Colunas suportadas: `full_name`, `email`, `role` (`admin` / `member`), `avatar_u
 
 O projeto usa **Kamal 2** para deploy via Docker. Consulte `.kamal/` para a configuração de servidores e secrets.
 
+Aplicação publicada: [acessar tela de login](https://fullstack-developer-jhrp.onrender.com/login).
+
 ```bash
 # Primeiro deploy
 kamal setup
