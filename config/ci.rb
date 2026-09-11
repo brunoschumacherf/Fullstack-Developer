@@ -4,6 +4,8 @@ CI.run do
   step "Setup", "bin/setup --skip-server"
 
   step "Style: Ruby", "bin/rubocop"
+  step "Types: Frontend", "npm run check"
+  step "Tests: Frontend", "npm test -- --ci"
 
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: npm audit", "npm audit --audit-level=high"

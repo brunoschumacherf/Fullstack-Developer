@@ -1,27 +1,11 @@
-import { Link, useForm, usePage } from "@inertiajs/react"
-import type { FormEvent } from "react"
+import useUserEditor from "../../hooks/useUserEditor"
+import { Link } from "@inertiajs/react"
 import UserForm from "../../components/UserForm"
 import { useT } from "../../i18n"
-import type { SharedProps } from "../../types"
 
 export default function Register() {
-  const { errors } = usePage<SharedProps>().props
   const t = useT()
-  const { data, setData, post, processing } = useForm({
-    user: {
-      full_name: "",
-      email_address: "",
-      password: "",
-      password_confirmation: "",
-      avatar_url: "",
-      avatar: null as File | null,
-    },
-  })
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault()
-    post("/register", { forceFormData: true })
-  }
+  const editor = useUserEditor({ url: "/register" })
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -29,11 +13,7 @@ export default function Register() {
       <p className="mt-1 text-sm text-slate-500">{t("register.subtitle")}</p>
       <div className="mt-6">
         <UserForm
-          data={data.user}
-          setData={(field, value) => setData(`user.${field}` as never, value as never)}
-          onSubmit={submit}
-          processing={processing}
-          errors={errors ?? {}}
+          {...editor}
           submitLabel={t("forms.create_account")}
           requirePassword
         />

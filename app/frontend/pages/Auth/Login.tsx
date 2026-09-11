@@ -1,3 +1,4 @@
+import FormField from "../../components/forms/FormField"
 import { Link, useForm, usePage } from "@inertiajs/react"
 import type { FormEvent } from "react"
 import { useT } from "../../i18n"
@@ -22,20 +23,18 @@ export default function Login() {
       <p className="mt-1 text-sm text-slate-500">{t("login.subtitle")}</p>
 
       <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
-        <div>
-          <label htmlFor="email_address" className="block text-sm font-medium text-slate-700">{t("login.email")}</label>
-          <input
+        <FormField
             id="email_address"
             type="email"
             required
             value={data.email_address}
             onChange={(event) => setData("email_address", event.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700">{t("login.password")}</label>
-          <input
+          
+          label={t("login.email")}
+          error={errors?.email_address}
+        />
+        <FormField
             id="password"
             type="password"
             required
@@ -43,9 +42,10 @@ export default function Login() {
             value={data.password}
             onChange={(event) => setData("password", event.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-          />
-        </div>
-        {errors?.email_address && <p className="text-sm text-rose-600">{String(errors.email_address)}</p>}
+          
+          label={t("login.password")}
+          error={errors?.password}
+        />
         <button
           type="submit"
           disabled={processing}

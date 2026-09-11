@@ -43,6 +43,12 @@ jobs:
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: npm audit --audit-level=high
 
+      - name: Check TypeScript
+        run: npm run check
+
+      - name: Run frontend tests
+        run: npm test -- --ci
+
   lint:
     runs-on: ubuntu-latest
     env:
