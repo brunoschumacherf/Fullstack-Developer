@@ -1,109 +1,136 @@
 # Umanni — User Management
 
-Aplicação fullstack de gerenciamento de usuários construída com **Ruby on Rails 8**, **React 19** e **Inertia.js**. Permite que administradores criem, editem e importem usuários em massa via CSV ou Excel, com progresso de importação em tempo real via ActionCable.
+A fullstack user management application built with **Ruby on Rails 8**, **React 19**, and **Inertia.js**. Administrators can create, edit, and bulk-import users via CSV or Excel files, with real-time import progress delivered through ActionCable WebSockets.
 
 ---
 
-## Stack
+## Tech Stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |---|---|
 | Backend | Ruby 4 · Rails 8.1 · PostgreSQL 16 |
 | Frontend | React 19 · TypeScript · Tailwind CSS 4 |
 | Bridge | Inertia.js 3 · Vite 8 |
-| Filas | Solid Queue |
+| Background jobs | Solid Queue |
 | Cache | Solid Cache |
 | WebSocket | Solid Cable + ActionCable |
-| Testes (Ruby) | RSpec · Capybara · Selenium |
-| Testes (JS) | Jest · Testing Library |
+| Ruby tests | RSpec · Capybara · Selenium |
+| JS tests | Jest · Testing Library |
 | Linter | RuboCop (omakase) · TypeScript strict |
-| Deploy | Kamal 2 · Thruster |
+| Deployment | Kamal 2 · Thruster |
 
 ---
 
-## Pré-requisitos
+## Prerequisites
 
-- Docker & Docker Compose
-- Node.js (para rodar Jest localmente, opcional)
+- [Docker](https://www.docker.com/) and Docker Compose
+- Node.js ≥ 20 (only required to run Jest locally; optional)
 
 ---
 
-## Setup
+## Setup & Running
+
+### 1. Clone the repository
 
 ```bash
-# 1. Clone o repositório
 git clone <repo-url>
 cd fullstack-developer
-
-# 2. Copie as variáveis de ambiente
-cp .env.example .env
-
-# 3. Suba os containers e prepare o banco
-docker compose up -d db
-docker compose run --rm app bin/rails db:setup
-
-# 4. Suba tudo
-docker compose up
 ```
 
-A aplicação estará disponível em **http://localhost:3000**.  
-O servidor Vite (HMR) roda em **http://localhost:3036**.
-
----
-
-## Desenvolvimento
+### 2. Configure environment variables
 
 ```bash
-# Subir todos os serviços (Rails + Vite + Solid Queue)
+cp .env.example .env
+```
+
+Edit `.env` if you need to change database credentials or other settings.
+
+### 3. Build the Docker image
+
+```bash
+docker compose build
+```
+
+### 4. Set up the database
+
+This command creates the database, runs all migrations, and seeds initial data:
+
+```bash
+docker compose run --rm app bin/rails db:setup
+```
+
+To run only migrations on an existing database:
+
+```bash
+docker compose run --rm app bin/rails db:migrate
+```
+
+### 5. Start the application
+
+```bash
 docker compose up
+```
 
-# Rodar um comando avulso dentro do container
-docker compose run --rm app <comando>
+| Service | URL |
+|---|---|
+| Rails application | http://localhost:3000 |
+| Vite dev server (HMR) | http://localhost:3036 |
 
-# Console Rails
+The stack runs three processes simultaneously (Rails server, Vite, and Solid Queue worker) as defined in `Procfile.dev`.
+
+---
+
+## Development
+
+```bash
+# Open a Rails console
 docker compose run --rm app bin/rails console
 
-# Migrar banco
+# Install a new gem (after editing Gemfile)
+docker compose run --rm app bundle install
+
+# Generate and run a new migration
+docker compose run --rm app bin/rails generate migration AddColumnToTable column:type
 docker compose run --rm app bin/rails db:migrate
 
-# Instalar gem nova (após editar o Gemfile)
-docker compose run --rm app bundle install
+# Run any one-off command inside the container
+docker compose run --rm app <command>
 ```
 
 ---
 
-## Testes
+## Testing
 
 ### Ruby — RSpec
 
 ```bash
-# Suite completa
+# Run the full test suite
 docker compose run --rm app bundle exec rspec
 
-# Arquivo ou spec específica
+# Run a specific file or directory
 docker compose run --rm app bundle exec rspec spec/serializers/user_serializer_spec.rb
 docker compose run --rm app bundle exec rspec spec/services/user_imports/
 
-# Com seed fixo (reproduzir falhas)
+# Reproduce a failure with a fixed seed
 docker compose run --rm app bundle exec rspec --seed 1234
 ```
 
-> O relatório de cobertura é gerado em `coverage/index.html` (mínimo configurado: 90% de linhas e branches).
+> Coverage reports are generated at `coverage/index.html`. The project enforces a minimum of **90% line and branch coverage** via SimpleCov.
 
 ### JavaScript — Jest
 
 ```bash
-# Suite completa
+# Run the full suite
 npm test
 
-# Com cobertura
+# Run with coverage
 npm run test:coverage
 
 # Watch mode
 npx jest --watch
 ```
 
-### Verificação de tipos TypeScript
+### TypeScript type checking
 
 ```bash
 npm run check
@@ -111,17 +138,19 @@ npm run check
 
 ---
 
-## Linter
+## Linting
 
 ```bash
-# RuboCop (verifica e corrige automaticamente o que for seguro)
+# Check for offenses
 docker compose run --rm app bundle exec rubocop
+
+# Auto-fix safe offenses
 docker compose run --rm app bundle exec rubocop -a
 ```
 
 ---
 
-## CI — comando completo
+## CI — Full check command
 
 ```bash
 docker compose run --rm app bundle exec rspec && docker compose run --rm app bundle exec rubocop
@@ -129,13 +158,13 @@ docker compose run --rm app bundle exec rspec && docker compose run --rm app bun
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```
 app/
 ├── controllers/
 │   ├── admin/
-│   │   ├── dashboard_controller.rb   # Painel admin
+│   │   ├── dashboard_controller.rb    # Admin panel
 │   │   ├── user_imports_controller.rb
 │   │   └── users_controller.rb
 │   ├── profiles_controller.rb
@@ -146,118 +175,115 @@ app/
 │   ├── user_import.rb
 │   └── session.rb
 ├── serializers/
-│   ├── user_serializer.rb            # ActiveModel::Serializer
+│   ├── user_serializer.rb             # ActiveModel::Serializer
 │   └── user_import_serializer.rb
 ├── services/
 │   ├── dashboard/
-│   │   ├── stats.rb                  # Agrega métricas do painel
-│   │   └── broadcaster.rb            # Broadcast via ActionCable
+│   │   ├── stats.rb                   # Aggregates dashboard metrics
+│   │   └── broadcaster.rb             # Broadcasts via ActionCable
 │   └── user_imports/
-│       ├── parser_factory.rb         # Seleciona CSV ou Excel parser
+│       ├── parser_factory.rb          # Selects CSV or Excel parser
 │       ├── csv_parser.rb
 │       ├── excel_parser.rb
-│       └── processor.rb              # Orquestra a importação
+│       └── processor.rb              # Orchestrates the import
 └── jobs/
-    └── process_user_import_job.rb    # Job assíncrono de importação
+    └── process_user_import_job.rb     # Async import job
 ```
 
-### Fluxo de importação de usuários
+### User import flow
 
 ```
-Upload CSV/XLSX
-      │
-      ▼
+CSV / XLSX upload
+       │
+       ▼
 UserImportsController#create
-      │  salva arquivo (Active Storage)
-      ▼
-ProcessUserImportJob (Solid Queue)
-      │
-      ▼
+       │  persists file via Active Storage
+       ▼
+ProcessUserImportJob  (Solid Queue)
+       │
+       ▼
 UserImports::Processor
-      │
-      ├── ParserFactory.parse(path, extension)
-      │       ├── CsvParser     (.csv)
-      │       └── ExcelParser   (.xlsx / .xls / .ods)
-      │
-      └── import_row → User.create
-                │
-                └── broadcast_progress → ActionCable → frontend
+       │
+       ├── ParserFactory.parse(path, extension)
+       │       ├── CsvParser     (.csv)
+       │       └── ExcelParser   (.xlsx / .xls / .ods)
+       │
+       └── import_row → User.create
+                 │
+                 └── broadcast_progress → ActionCable → frontend
 ```
 
 ---
 
-## Variáveis de ambiente
+## Environment Variables
 
-| Variável | Descrição | Padrão |
+| Variable | Description | Default |
 |---|---|---|
-| `POSTGRES_USER` | Usuário do banco | `postgres` |
-| `POSTGRES_PASSWORD` | Senha do banco | `password` |
-| `DB_HOST` | Host do PostgreSQL | `localhost` |
-| `DB_PORT` | Porta do PostgreSQL | `5432` |
-| `DATABASE_URL` | URL completa (produção) | — |
-| `RAILS_MASTER_KEY` | Chave de credenciais Rails | — |
-| `INERTIA_SSR` | Habilita SSR do Inertia | `false` |
-| `INERTIA_SSR_URL` | URL do servidor SSR | `http://127.0.0.1:13714` |
-| `RUBY_ZJIT_ENABLE` | Habilita o ZJIT do Ruby 4 | `0` |
+| `POSTGRES_USER` | Database user | `postgres` |
+| `POSTGRES_PASSWORD` | Database password | `password` |
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DATABASE_URL` | Full connection URL (production) | — |
+| `RAILS_MASTER_KEY` | Rails credentials key | — |
+| `INERTIA_SSR` | Enable Inertia SSR | `false` |
+| `INERTIA_SSR_URL` | SSR server URL | `http://127.0.0.1:13714` |
+| `RUBY_ZJIT_ENABLE` | Enable Ruby 4 ZJIT compiler | `0` |
 
 ---
 
-## Arquivos de exemplo para importação
+## Sample Import Files
 
-Na raiz do projeto há dois arquivos de exemplo prontos para testar o upload:
+Two ready-to-use files are included at the project root for testing the bulk import feature:
 
-| Arquivo | Formato |
+| File | Format |
 |---|---|
 | `example_users_import.csv` | CSV |
 | `example_users_import.xlsx` | Excel |
 
-Colunas suportadas: `full_name`, `email`, `role` (`admin` / `member`), `avatar_url`.
+Supported columns: `full_name`, `email`, `role` (`admin` or `member`), `avatar_url`.
 
 ---
 
-## Deploy
+## Deployment
 
-O projeto usa **Kamal 2** para deploy via Docker. Consulte `.kamal/` para a configuração de servidores e secrets.
-
-Aplicação publicada: [acessar tela de login](https://fullstack-developer-jhrp.onrender.com/login).
+The project uses **Kamal 2** for zero-downtime Docker-based deployments. See `.kamal/` for server and secrets configuration.
 
 ```bash
-# Primeiro deploy
+# First deploy
 kamal setup
 
-# Deploys subsequentes
+# Subsequent deploys
 kamal deploy
 ```
 
 ---
 
-## Desenvolvido com IA — Google Gemini
+## AI Usage Declaration
 
-Este projeto foi desenvolvido com o auxílio do **[Google Gemini](https://gemini.google.com/)** integrado ao editor via **[Antigravity IDE](https://antigravity.dev/)**, o que transformou a forma como o código foi escrito, revisado e testado.
+This project was developed with the assistance of **[Google Gemini](https://gemini.google.com/)**, integrated directly into the editor via **[Antigravity IDE](https://antigravity.dev/)**.
 
-### Autocomplete de código
+### Code autocomplete
 
-O Gemini atuou como um par de programação em tempo real ao longo de todo o desenvolvimento. Sugestões de código foram aceitas, adaptadas ou descartadas com senso crítico — a IA acelerou a escrita de boilerplate, mas as decisões de arquitetura, nomes de método e estrutura de pastas foram sempre revisadas e ajustadas manualmente para garantir coerência com o restante do projeto.
+Gemini acted as a real-time pair programmer throughout development. Suggestions were accepted, adapted, or discarded with critical judgment — AI accelerated the writing of boilerplate and repetitive patterns, while architecture decisions, method names, and folder structure were always reviewed and adjusted manually to ensure consistency with the rest of the project.
 
-Exemplos práticos de onde o autocomplete economizou tempo:
+Concrete examples where autocomplete saved meaningful time:
 
-- Geração dos parsers `CsvParser` e `ExcelParser` com a lógica de normalização de cabeçalhos
-- Estrutura inicial dos serializers com `ActiveModel::Serializer`
-- Corpo dos specs de RSpec (fixtures, `let`, `subject`, contextos)
+- Initial structure of `CsvParser` and `ExcelParser` with header normalization logic
+- Serializer scaffolding using `ActiveModel::Serializer`
+- RSpec spec bodies — fixtures, `let`, `subject`, and context blocks
 
-### Setup de testes
+### Test setup
 
-Os specs deste projeto foram escritos **com assistência direta da IA**. O fluxo foi:
+All specs in this project were written **with direct AI assistance**. The workflow was:
 
-1. Escrever o código de produção
-2. Pedir ao Gemini para gerar os casos de teste correspondentes
-3. Revisar cada spec — ajustar fixtures, corrigir edge cases e garantir que os testes realmente validam o comportamento esperado, não apenas que o código roda
+1. Write the production code
+2. Ask Gemini to generate the corresponding test cases
+3. Review every spec — adjust fixtures, fix edge cases, and ensure tests actually validate behavior rather than just confirming the code runs
 
-Esse processo revelou bugs reais: a ordem de `create!` vs `attach` no `UserImportSerializer` spec, por exemplo, foi identificada exatamente porque a IA gerou um spec que tentou criar o registro antes do arquivo estar anexado — forçando a correção para `new` + `attach` + `save!`.
+This process uncovered real bugs: the ordering of `create!` vs `file.attach` in the `UserImportSerializer` spec, for instance, was caught precisely because the AI-generated test attempted to persist the record before attaching the file — forcing the correction to `new` + `attach` + `save!`.
 
-### Refatorações guiadas por conversa
+### Conversation-driven refactoring
 
-Parte das refatorações deste projeto — como a extração da lógica de parsing para a `ParserFactory` e a migração do `to_props` dos models para serializers dedicados — foram propostas, discutidas e implementadas em conversa direta com o Gemini. O processo se assemelha a um code review interativo: a IA propõe um plano, o desenvolvedor questiona, aprova ou rejeita partes, e a execução acontece de forma incremental.
+Several refactorings in this project — including the extraction of parsing logic into `ParserFactory` and the migration of `to_props` from models into dedicated serializers — were proposed, discussed, and implemented through direct conversation with Gemini. The process resembles an interactive code review: the AI proposes a plan, the developer questions, approves, or rejects parts of it, and execution happens incrementally with full visibility at each step.
 
-> A IA não substituiu o julgamento técnico — ela amplificou a velocidade de execução enquanto o desenvolvedor manteve o controle das decisões de design.
-
+> AI did not replace technical judgment — it amplified execution speed while the developer retained full control over design decisions.
