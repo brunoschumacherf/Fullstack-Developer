@@ -31,7 +31,7 @@ module UserImports
     rescue StandardError => error
       @user_import.update!(
         status: :failed,
-        error_messages: Array(@user_import.error_messages) + [error.message]
+        error_messages: Array(@user_import.error_messages) + [ error.message ]
       )
     end
 
@@ -91,7 +91,7 @@ module UserImports
     end
 
     def append_error(message)
-      messages = Array(@user_import.error_messages) + [message]
+      messages = Array(@user_import.error_messages) + [ message ]
       @user_import.update!(error_messages: messages)
     end
   end

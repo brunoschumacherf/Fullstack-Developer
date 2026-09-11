@@ -29,7 +29,9 @@ services:
       - "3000:3000"
       - "3036:3036"
     environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/user_management_development
+      DB_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
       RAILS_ENV: development
       VITE_RUBY_HOST: 0.0.0.0
     depends_on:

@@ -12,8 +12,8 @@ module UserManagementApp
     config.i18n.default_locale = :"pt-BR"
     config.i18n.fallbacks = [ :"pt-BR", :en ]
     config.generators do |g|
-      g.test_framework :test_unit, fixture: true
-      g.system_tests :test_unit
+      g.test_framework :rspec, fixtures: true
+      g.system_tests :rspec
     end
 
     config.action_dispatch.default_headers.merge!(

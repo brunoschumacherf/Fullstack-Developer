@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+# Compose defaults to development; prepare the test database for RSpec commands.
+if [[ "${1:-}" == "rspec" || "${1:-}" == "bin/rspec" || ( "${1:-}" == "bundle" && "${2:-}" == "exec" && "${3:-}" == "rspec" ) ]]; then
+  export RAILS_ENV=test
+fi
+
 bundle check || bundle install
 if [ ! -d node_modules/@inertiajs ]; then
   npm install

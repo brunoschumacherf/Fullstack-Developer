@@ -26,6 +26,7 @@ gem "roo", "~> 3.0"
 gem "rails-i18n", "~> 8.0"
 
 group :development, :test do
+  gem "rspec-rails", "~> 8.0"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
   gem "brakeman", require: false

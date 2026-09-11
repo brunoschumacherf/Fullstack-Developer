@@ -1,7 +1,7 @@
-require "test_helper"
+require "rails_helper"
 
-class ProcessUserImportJobTest < ActiveJob::TestCase
-  test "processes a pending import" do
+RSpec.describe ProcessUserImportJob, type: :job do
+  it "processes a pending import" do
     import = users(:admin).user_imports.new
     import.file.attach(
       io: file_fixture("users.csv").open,
@@ -10,14 +10,14 @@ class ProcessUserImportJobTest < ActiveJob::TestCase
     )
     import.save!
 
-    assert_difference("User.count", 2) do
+    expect do
       ProcessUserImportJob.perform_now(import.id)
-    end
+    end.to change(User, :count).by(2)
 
-    assert import.reload.completed?
+    expect(import.reload.completed?).to be_truthy
   end
 
-  test "skips imports that already finished" do
+  it "skips imports that already finished" do
     import = users(:admin).user_imports.new(status: :completed)
     import.file.attach(
       io: file_fixture("users.csv").open,
@@ -26,8 +26,8 @@ class ProcessUserImportJobTest < ActiveJob::TestCase
     )
     import.save!
 
-    assert_no_difference("User.count") do
+    expect do
       ProcessUserImportJob.perform_now(import.id)
-    end
+    end.not_to change(User, :count)
   end
 end

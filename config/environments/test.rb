@@ -26,8 +26,9 @@ Rails.application.configure do
   config.active_record.encryption.primary_key = "testPrimaryKeytestPrimaryKey12"
   config.active_record.encryption.deterministic_key = "testDeterministicKeytestDet12"
   config.active_record.encryption.key_derivation_salt = "testKeyDerivationSalttestKey12"
+  config.active_record.encryption.encrypt_fixtures = true
 
-  # Render exception templates for rescuable exceptions and raise for other exceptions.
+  # Render expected HTTP errors, including missing browser assets.
   config.action_dispatch.show_exceptions = :rescuable
 
   # Disable request forgery protection in test environment.
@@ -47,10 +48,6 @@ Rails.application.configure do
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
-
-  config.active_record.encryption.primary_key = "development_primary_key_32_bytes_long!!"
-  config.active_record.encryption.deterministic_key = "development_deterministic_key_32_bytes!"
-  config.active_record.encryption.key_derivation_salt = "development_key_derivation_salt_32_bytes!"
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
