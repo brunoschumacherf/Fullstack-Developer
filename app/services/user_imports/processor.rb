@@ -1,5 +1,6 @@
 require "csv"
 require "roo"
+require_relative "parser_factory"
 
 module UserImports
   class Processor
@@ -40,33 +41,8 @@ module UserImports
     def spreadsheet_rows
       @user_import.file.open do |file|
         extension = File.extname(@user_import.file.filename.to_s).delete(".").downcase
-        if extension == "csv"
-          csv_rows(file.path)
-        else
-          excel_rows(file.path, extension)
-        end
+        ParserFactory.parse(file.path, extension)
       end
-    end
-
-    def csv_rows(path)
-      table = CSV.read(path, headers: true, encoding: "bom|utf-8")
-      table.filter_map { |row| normalize_row(row.to_h) }
-    end
-
-    def excel_rows(path, extension)
-      spreadsheet = Roo::Spreadsheet.open(path, extension: extension)
-      sheet = spreadsheet.sheet(0)
-      headers = sheet.row(1).map { |header| header.to_s.strip.downcase }
-      (2..sheet.last_row).filter_map do |row_index|
-        normalize_row(headers.zip(sheet.row(row_index)).to_h)
-      end
-    end
-
-    def normalize_row(row)
-      normalized = row.stringify_keys.transform_keys { |key| key.to_s.strip.downcase }
-      return if normalized.values.all? { |value| value.blank? }
-
-      normalized
     end
 
     def import_row(row, line_number)
