@@ -40,3 +40,10 @@ export type SharedProps = {
   i18n: Record<string, unknown>
   errors?: Record<string, string | string[]>
 }
+
+export type PaginationProps = {
+  page: number
+  per_page: number
+  total: number
+  total_pages: number
+}

@@ -6,7 +6,7 @@ import useDashboardStats from "../../hooks/useDashboardStats"
 import { useT } from "../../i18n"
 import type { DashboardPageProps } from "../../types/pages"
 
-export default function Dashboard({ stats, users, active_import }: DashboardPageProps) {
+export default function Dashboard({ stats, users, active_import, user_filters, user_pagination }: DashboardPageProps) {
   const t = useT()
   const liveStats = useDashboardStats(stats)
   return (
@@ -31,7 +31,7 @@ export default function Dashboard({ stats, users, active_import }: DashboardPage
       </div>
 
       <UserImportPanel activeImport={active_import} />
-      <UsersTable users={users} />
+      <UsersTable users={users} query={user_filters.query} pagination={user_pagination} />
     </div>
   )
 }

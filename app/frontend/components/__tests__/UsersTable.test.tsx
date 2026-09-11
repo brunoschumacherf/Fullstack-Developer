@@ -9,11 +9,12 @@ jest.mock("@inertiajs/react", () => ({
 }))
 jest.mock("../../i18n", () => ({ useT: () => (key: string) => key }))
 const member = { id: 7, full_name: "Morgan", email_address: "morgan@example.com", role: "member", avatar_url: "/avatar.png" }
+const pagination = { page: 1, per_page: 10, total: 1, total_pages: 1 }
 
 afterEach(() => jest.restoreAllMocks())
 
 it.each([["member", "admin"], ["admin", "member"]])("toggles %s to %s", (role, expectedRole) => {
-  render(<UsersTable users={[{ ...member, role }]} />)
+  render(<UsersTable users={[{ ...member, role }]} query="" pagination={pagination} />)
   expect(screen.getByRole("link", { name: "dashboard.edit" })).toHaveAttribute("href", "/admin/users/7/edit")
   fireEvent.click(screen.getByRole("button", { name: "dashboard.toggle_role" }))
   expect(router.patch).toHaveBeenCalledWith("/admin/users/7", { user: { role: expectedRole } })
@@ -21,7 +22,7 @@ it.each([["member", "admin"], ["admin", "member"]])("toggles %s to %s", (role, e
 
 it("requires confirmation before deleting a user", () => {
   const confirm = jest.spyOn(window, "confirm").mockReturnValue(false)
-  render(<UsersTable users={[member]} />)
+  render(<UsersTable users={[member]} query="" pagination={pagination} />)
   fireEvent.click(screen.getByRole("button", { name: "dashboard.delete" }))
   expect(router.delete).not.toHaveBeenCalled()
   confirm.mockReturnValue(true)

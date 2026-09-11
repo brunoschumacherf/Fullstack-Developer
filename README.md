@@ -136,6 +136,15 @@ npx jest --watch
 npm run check
 ```
 
+### Development sample users
+
+The admin listing searches partial names and complete email addresses, preserving the filter while paginating.
+Populate the development database with 100 sample users using the idempotent script:
+
+```bash
+docker compose run --rm app bundle exec rails runner script/create_users.rb
+```
+
 ---
 
 ## Linting

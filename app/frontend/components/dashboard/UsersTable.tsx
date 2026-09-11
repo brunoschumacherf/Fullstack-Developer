@@ -1,10 +1,13 @@
 import { Link, router } from "@inertiajs/react"
 import { useT } from "../../i18n"
 import type { UserProps } from "../../types"
+import type { PaginationProps } from "../../types"
+import Pagination from "./Pagination"
+import UserSearch from "./UserSearch"
 
-type UsersTableProps = { users: UserProps[] }
+type UsersTableProps = { users: UserProps[]; query: string; pagination: PaginationProps }
 
-export default function UsersTable({ users }: UsersTableProps) {
+export default function UsersTable({ users, query, pagination }: UsersTableProps) {
   const t = useT()
   const toggleRole = (user: UserProps) => {
     const role = user.role === "admin" ? "member" : "admin"
@@ -20,8 +23,9 @@ export default function UsersTable({ users }: UsersTableProps) {
 
   return (
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 px-6 py-4">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold text-slate-900">{t("dashboard.users")}</h2>
+          <UserSearch query={query} />
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
@@ -34,6 +38,9 @@ export default function UsersTable({ users }: UsersTableProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
+              {users.length === 0 && (
+                <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-500">{t("dashboard.no_users")}</td></tr>
+              )}
               {users.map((user) => (
                 <tr key={user.id} className="hover:bg-slate-50/70">
                   <td className="px-6 py-4">
@@ -66,6 +73,7 @@ export default function UsersTable({ users }: UsersTableProps) {
             </tbody>
           </table>
         </div>
+        <Pagination pagination={pagination} query={query} />
       </section>
   )
 }

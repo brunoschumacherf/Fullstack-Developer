@@ -107,6 +107,12 @@ pt-BR:
       status: "Status: %{status}"
       progress: "%{processed}/%{total} processados · %{successful} criados · %{failed} falharam"
       users: Usuários
+      search_label: Buscar usuários
+      search_placeholder: Nome ou e-mail completo
+      search: Buscar
+      no_users: Nenhum usuário encontrado.
+      pagination: Paginação de usuários
+      results: "%{total} usuários encontrados"
       user: Usuário
       email: E-mail
       role: Perfil

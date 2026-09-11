@@ -84,6 +84,12 @@ en:
       status: "Status: %{status}"
       progress: "%{processed}/%{total} processed · %{successful} created · %{failed} failed"
       users: Users
+      search_label: Search users
+      search_placeholder: Name or full email
+      search: Search
+      no_users: No users found.
+      pagination: User pagination
+      results: "%{total} users found"
       user: User
       email: Email
       role: Role

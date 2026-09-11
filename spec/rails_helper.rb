@@ -33,6 +33,7 @@ RSpec.configure do |config|
   config.include RequestAuthenticationHelpers, type: :request
   config.include SystemAuthenticationHelpers, type: :system
   config.include RSpec::Rails::RailsExampleGroup, type: :service
+  config.include RSpec::Rails::RailsExampleGroup, type: :query
   config.include RSpec::Rails::RailsExampleGroup, type: :serializer
 
   config.before(:each, type: :system) do

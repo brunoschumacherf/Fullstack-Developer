@@ -6,7 +6,9 @@ module Admin
       redirect_to admin_dashboard_path
     end
 
-    def new; end
+    def new
+      render inertia: "Admin/Users/New"
+    end
 
     def edit
       render inertia: "Admin/Users/Edit", props: { user: UserSerializer.new(@user).as_json }

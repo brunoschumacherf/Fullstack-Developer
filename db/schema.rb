@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_072000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_11_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -215,6 +216,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_072000) do
     t.integer "total_rows", default: 0
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["user_id", "status", "created_at"], name: "index_user_imports_on_user_status_created_at", order: { created_at: :desc }
     t.index ["user_id"], name: "index_user_imports_on_user_id"
   end
 
@@ -227,6 +229,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_072000) do
     t.enum "role", default: "member", null: false, enum_type: "user_role"
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["full_name"], name: "index_users_on_full_name_trigram", opclass: :gin_trgm_ops, using: :gin
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
