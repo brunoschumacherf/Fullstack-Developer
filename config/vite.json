@@ -17,6 +17,8 @@
   "production": {
     "autoBuild": false,
     "publicOutputDir": "vite",
-    "ssrBuildEnabled": false
+    "ssrBuildEnabled": true,
+    "ssrEntrypoint": "~/entrypoints/ssr.tsx",
+    "ssrOutputDir": "public/vite-ssr"
   }
 }

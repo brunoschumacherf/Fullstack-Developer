@@ -1,17 +1,21 @@
 import { act, renderHook } from "@testing-library/react"
 import { router } from "@inertiajs/react"
-import consumer from "../../channels/consumer"
+import getConsumer from "../../channels/consumer"
 import useImportProgress from "../useImportProgress"
 import useDashboardStats from "../useDashboardStats"
 import type { ImportProps, StatsProps } from "../../types"
 
 jest.mock("@inertiajs/react", () => ({ router: { reload: jest.fn() } }))
-jest.mock("../../channels/consumer", () => ({ __esModule: true, default: { subscriptions: { create: jest.fn() } } }))
-const create = jest.mocked(consumer.subscriptions.create)
+jest.mock("../../channels/consumer", () => ({ __esModule: true, default: jest.fn() }))
+const mockedGetConsumer = jest.mocked(getConsumer)
+const create = jest.fn()
 const progress: ImportProps = { id: 1, status: "pending", total: 3, processed: 0, successful: 0, failed: 0, percentage: 0, errors: [] }
 const unsubscribe = jest.fn()
 
-beforeEach(() => create.mockReturnValue({ unsubscribe }))
+beforeEach(() => {
+  mockedGetConsumer.mockReturnValue({ subscriptions: { create } } as ReturnType<typeof getConsumer>)
+  create.mockReturnValue({ unsubscribe })
+})
 
 it("subscribes when an import arrives through new page props", () => {
   const { result, rerender, unmount } = renderHook(({ value }) => useImportProgress(value), { initialProps: { value: null as ImportProps | null } })

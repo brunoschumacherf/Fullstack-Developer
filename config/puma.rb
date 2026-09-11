@@ -34,6 +34,10 @@ port ENV.fetch("PORT", 3000), "0.0.0.0"
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# Supervise the Inertia Node SSR server with Puma in production. This is a
+# no-op when SSR is disabled or its bundle is unavailable.
+plugin :inertia_ssr
+
 # Run the Solid Queue supervisor inside of Puma for single-server deployments.
 plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"] != "false" && (Rails.env.development? || ENV["SOLID_QUEUE_IN_PUMA"])
 

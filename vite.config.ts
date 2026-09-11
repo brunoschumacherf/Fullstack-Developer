@@ -5,11 +5,23 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
+  build: {
+    sourcemap: false,
+  },
+
   plugins: [
     RubyPlugin(),
     react(),
     tailwindcss(),
-    inertia(),
+    inertia({
+      ssr: {
+        entry: "entrypoints/ssr.tsx",
+        host: "127.0.0.1",
+        port: 13714,
+        cluster: true,
+        sourcemap: false,
+      },
+    }),
   ],
 
   server: {

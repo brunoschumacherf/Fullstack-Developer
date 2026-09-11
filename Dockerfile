@@ -30,7 +30,6 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so" \
-    RUBY_YJIT_ENABLE="0" \
     RUBY_ZJIT_ENABLE="1"
 
 # OptimizationRef: RB4-RM80-Solid
@@ -75,11 +74,18 @@ RUN chmod +x bin/*
 
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# Asset compilation starts helper Ruby processes that may select their own JIT.
+# Keep the production runtime setting out of this build-only command.
+RUN env -u RUBY_ZJIT_ENABLE SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-RUN rm -rf node_modules tmp/cache test spec
+# The SSR bundle externalizes React dependencies, so retain production-only
+# Node modules while removing build and test tooling from the final image.
+RUN npm prune --omit=dev && \
+    rm -rf tmp/cache test spec
 
 FROM base
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
 
 RUN groupadd --system --gid 1000 rails && \
     useradd rails \
