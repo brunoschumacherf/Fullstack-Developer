@@ -106,7 +106,9 @@ RSpec.describe User, type: :model do
       avatar_url: nil
     )
 
-    expect(user.to_props[:id]).to eq(user.id)
+    props = UserSerializer.new(user).as_json
+
+    expect(props[:id]).to eq(user.id)
     expect(user.avatar_image_url).to include("ui-avatars.com")
   end
 

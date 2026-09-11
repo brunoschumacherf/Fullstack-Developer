@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       auth: {
-        user: current_user&.to_props
+        user: current_user && UserSerializer.new(current_user).as_json
       },
       flash: {
         notice: flash[:notice],

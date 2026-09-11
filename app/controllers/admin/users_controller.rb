@@ -11,7 +11,7 @@ module Admin
     end
 
     def edit
-      render inertia: "Admin/Users/Edit", props: { user: @user.to_props }
+      render inertia: "Admin/Users/Edit", props: { user: UserSerializer.new(@user).as_json }
     end
 
     def create

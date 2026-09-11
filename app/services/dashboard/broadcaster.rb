@@ -7,7 +7,7 @@ module Dashboard
     end
 
     def self.import_progress(user_import)
-      ActionCable.server.broadcast("import_progress_#{user_import.id}", user_import.to_props)
+      ActionCable.server.broadcast("import_progress_#{user_import.id}", UserImportSerializer.new(user_import).as_json)
     end
   end
 end

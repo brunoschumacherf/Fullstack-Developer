@@ -23,6 +23,7 @@ gem "image_processing", "~> 1.2"
 gem "inertia_rails", "~> 3.22"
 gem "vite_rails", "~> 3.11"
 gem "roo", "~> 3.0"
+gem "active_model_serializers", "~> 0.10"
 gem "rails-i18n", "~> 8.0"
 
 group :development, :test do

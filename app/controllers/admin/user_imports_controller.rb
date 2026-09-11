@@ -2,7 +2,7 @@ module Admin
   class UserImportsController < BaseController
     def show
       import = UserImport.find(params.expect(:id))
-      render json: import.to_props
+      render json: import, serializer: UserImportSerializer
     end
 
     def create

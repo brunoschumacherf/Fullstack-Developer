@@ -41,16 +41,6 @@ class User < ApplicationRecord
     end
   end
 
-  def to_props
-    {
-      id: id,
-      full_name: full_name,
-      email_address: email_address,
-      role: role,
-      avatar_url: avatar_image_url
-    }
-  end
-
   private
 
   def acceptable_avatar

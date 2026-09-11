@@ -1,6 +1,6 @@
 class ProfilesController < ApplicationController
   def show
-    render inertia: "Profile/Show", props: { user: current_user.to_props }
+    render inertia: "Profile/Show", props: { user: UserSerializer.new(current_user).as_json }
   end
 
   def update

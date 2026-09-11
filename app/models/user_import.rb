@@ -15,19 +15,6 @@ class UserImport < ApplicationRecord
     ((processed_rows.to_f / total_rows) * 100).round
   end
 
-  def to_props
-    {
-      id: id,
-      status: status,
-      total: total_rows.to_i,
-      processed: processed_rows.to_i,
-      successful: successful_rows.to_i,
-      failed: failed_rows.to_i,
-      percentage: progress_percentage,
-      errors: Array(error_messages)
-    }
-  end
-
   private
 
   def acceptable_spreadsheet
