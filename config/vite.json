@@ -17,7 +17,6 @@
   "production": {
     "autoBuild": false,
     "publicOutputDir": "vite",
-    "ssrBuildEnabled": true,
-    "ssrOutputDir": "ssr"
+    "ssrBuildEnabled": false
   }
 }
